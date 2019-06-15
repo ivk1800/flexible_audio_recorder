@@ -9,7 +9,7 @@ import android.media.MediaRecorder;
 final class AudioRecorderConfig {
 
     static AudioRecorderConfig defaultConfig() {
-        return new AudioRecorderConfig(null, MediaRecorder.AudioEncoder.AMR_NB, null, MediaRecorder.AudioSource.MIC, MediaRecorder.OutputFormat.THREE_GPP);
+        return new AudioRecorderConfig(null, MediaRecorder.AudioEncoder.AMR_NB, null, MediaRecorder.AudioSource.MIC, MediaRecorder.OutputFormat.THREE_GPP, null);
     }
 
     private final Integer audioChannels;
@@ -17,13 +17,15 @@ final class AudioRecorderConfig {
     private final Integer audioEncodingBitRate;
     private final Integer audioSource;
     private final Integer outputFormat;
+    private final Integer audioSamplingRate;
 
-    AudioRecorderConfig(Integer audioChannels, Integer audioEncoder, Integer audioEncodingBitRate, Integer audioSource, Integer outputFormat) {
+    AudioRecorderConfig(Integer audioChannels, Integer audioEncoder, Integer audioEncodingBitRate, Integer audioSource, Integer outputFormat, Integer audioSamplingRate) {
         this.audioChannels = audioChannels;
         this.audioEncoder = audioEncoder;
         this.audioEncodingBitRate = audioEncodingBitRate;
         this.audioSource = audioSource;
         this.outputFormat = outputFormat;
+        this.audioSamplingRate = audioSamplingRate;
     }
 
 
@@ -45,5 +47,9 @@ final class AudioRecorderConfig {
 
     Integer getOutputFormat() {
         return outputFormat;
+    }
+
+    public Integer getAudioSamplingRate() {
+        return audioSamplingRate;
     }
 }

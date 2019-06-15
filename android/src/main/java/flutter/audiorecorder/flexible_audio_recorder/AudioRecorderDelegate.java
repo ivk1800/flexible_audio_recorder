@@ -95,8 +95,9 @@ public class AudioRecorderDelegate implements PluginRegistry.RequestPermissionsR
         final Integer audioEncodingBitRate = (Integer) arguments.get("audioEncodingBitRate");
         final Integer audioSource = (Integer) arguments.get("audioSource");
         final Integer outputFormat = (Integer) arguments.get("outputFormat");
+        final Integer audioSamplingRate = (Integer) arguments.get("audioSamplingRate");
 
-        this.recorderConfig = new AudioRecorderConfig(audioChannels, audioEncoder, audioEncodingBitRate, audioSource, outputFormat);
+        this.recorderConfig = new AudioRecorderConfig(audioChannels, audioEncoder, audioEncodingBitRate, audioSource, outputFormat, audioSamplingRate);
 
         result.success(null);
     }
@@ -110,6 +111,7 @@ public class AudioRecorderDelegate implements PluginRegistry.RequestPermissionsR
         map.put("audioEncodingBitRate", config.getAudioEncodingBitRate());
         map.put("audioSource", config.getAudioSource());
         map.put("outputFormat", config.getOutputFormat());
+        map.put("audioSamplingRate", config.getAudioSamplingRate());
 
         result.success(map);
     }
@@ -164,6 +166,10 @@ public class AudioRecorderDelegate implements PluginRegistry.RequestPermissionsR
 
         if (recorderConfig.getAudioEncoder() != null) {
             recorder.setAudioEncoder(recorderConfig.getAudioEncoder());
+        }
+
+        if (recorderConfig.getAudioSamplingRate() != null) {
+            recorder.setAudioSamplingRate(recorderConfig.getAudioSamplingRate());
         }
     }
 

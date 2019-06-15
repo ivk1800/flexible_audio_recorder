@@ -43,13 +43,15 @@ class FlexibleAudioRecorder {
       @required AndroidAudioEncoder audioEncoder,
       @required int audioEncodingBitRate,
       @required AndroidAudioSource audioSource,
-      @required AndroidOutputFormat outputFormat}) async {
+      @required AndroidOutputFormat outputFormat,
+      @required int audioSamplingRate,}) async {
     Map map = {
       'audioChannels': audioChannels,
       'audioEncoder': audioEncoder.index,
       'audioEncodingBitRate': audioEncodingBitRate,
       'audioSource': audioSource.index,
       'outputFormat': outputFormat.index,
+      'audioSamplingRate': audioSamplingRate,
     };
 
     final bool result = await _channel.invokeMethod('setConfig', map);
@@ -68,13 +70,16 @@ class AndroidConfiguration {
   final int audioEncodingBitRate;
   final AndroidAudioSource audioSource;
   final AndroidOutputFormat outputFormat;
+  final int audioSamplingRate;
 
   const AndroidConfiguration(
       {@required this.audioChannels,
       @required this.audioEncoder,
       @required this.audioEncodingBitRate,
       @required this.audioSource,
-      @required this.outputFormat});
+      @required this.outputFormat,
+      @required this.audioSamplingRate,
+      });
 
   factory AndroidConfiguration.fromMap(Map map) {
     if (map == null) {
@@ -87,6 +92,7 @@ class AndroidConfiguration {
       audioEncodingBitRate: map['audioEncodingBitRate'],
       audioSource: AndroidAudioSource.values[map['audioSource']],
       outputFormat: AndroidOutputFormat.values[map['outputFormat']],
+      audioSamplingRate: map['audioSamplingRate'],
     );
   }
 
@@ -98,6 +104,7 @@ class AndroidConfiguration {
       'audioEncodingBitRate': audioEncodingBitRate,
       'audioSource': audioSource,
       'outputFormat': outputFormat,
+      'audioSamplingRate': audioSamplingRate,
     }.toString();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flexible_audio_recorder/flexible_audio_recorder.dart';
+import 'package:flexible_audio_recorder_example/pages/player_page.dart';
 import 'package:flexible_audio_recorder_example/pages/setup_android_config_page.dart';
 import 'package:flutter/material.dart';
 
@@ -60,7 +61,12 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
               },
             ),
             RaisedButton(
-              child: Text('startRecording'),
+              child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                Text('startRecording'),
+                _buildRecordIndicator(),
+              ]),
               onPressed: () async {
                 showMessageAlert(
                     context,
@@ -69,18 +75,26 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
                         .catchError((dynamic error) {
                       showMessageAlert(context, 'startRecording', error);
                     }));
+                setState(() {});
               },
             ),
             RaisedButton(
               child: Text('stopRecording'),
               onPressed: () async {
-                showMessageAlert(
-                    context,
-                    'stopRecording',
-                    await FlexibleAudioRecorder.stopRecording()
-                        .catchError((dynamic error) {
-                      showMessageAlert(context, 'stopRecording', error);
-                    }));
+                await FlexibleAudioRecorder.stopRecording()
+                    .catchError((dynamic error) {
+                  showMessageAlert(context, 'stopRecording', error);
+                }).then((String path) {
+                  if (path == null) {
+                    return;
+                  }
+
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                        return AudioPlayerPage(filePath: path,);
+                      }));
+                });
+                setState(() {});
               },
             ),
             RaisedButton(
@@ -114,6 +128,25 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
         ),
       ),
     );
+  }
+
+  FutureBuilder<bool> _buildRecordIndicator() {
+    return FutureBuilder(
+            future: FlexibleAudioRecorder.isRecording,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              bool isRecording = snapshot.data;
+
+              if (isRecording) {
+                return SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              return SizedBox(width: 1, height: 1,);
+
+            },);
   }
 
   void showMessageAlert(BuildContext context, String title, dynamic content) {

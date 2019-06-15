@@ -11,6 +11,7 @@ class SetupAndroidConfigPage extends StatefulWidget {
 class _SetupAndroidConfigPageState extends State<SetupAndroidConfigPage> {
   TextEditingController _audioChannelsController;
   TextEditingController _audioEncodingBitRateController;
+  TextEditingController _audioSamplingRateController;
 
   AndroidAudioEncoder _audioEncoder = AndroidAudioEncoder.DEFAULT;
   AndroidAudioSource _audioSource = AndroidAudioSource.DEFAULT;
@@ -21,6 +22,7 @@ class _SetupAndroidConfigPageState extends State<SetupAndroidConfigPage> {
     super.initState();
 
     _audioChannelsController = TextEditingController();
+    _audioSamplingRateController = TextEditingController();
     _audioEncodingBitRateController = TextEditingController();
 
     initPlatformState();
@@ -36,6 +38,8 @@ class _SetupAndroidConfigPageState extends State<SetupAndroidConfigPage> {
       _audioChannelsController.text = config.audioChannels?.toString() ?? '';
       _audioEncodingBitRateController.text =
           config.audioEncodingBitRate?.toString() ?? '';
+      _audioSamplingRateController.text =
+          config.audioSamplingRate?.toString() ?? '';
 
       _audioEncoder = config.audioEncoder;
       _audioSource = config.audioSource;
@@ -52,17 +56,35 @@ class _SetupAndroidConfigPageState extends State<SetupAndroidConfigPage> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            SizedBox(
+              height: 20,
+            ),
             Text('audioChannels'),
             TextField(
               controller: _audioChannelsController,
               keyboardType: TextInputType.number,
               decoration: new InputDecoration(),
             ),
+            SizedBox(
+              height: 20,
+            ),
             Text('audioEncodingBitRate'),
             TextField(
               controller: _audioEncodingBitRateController,
               keyboardType: TextInputType.number,
               decoration: new InputDecoration(),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text('audioSamplingRate'),
+            TextField(
+              controller: _audioSamplingRateController,
+              keyboardType: TextInputType.number,
+              decoration: new InputDecoration(),
+            ),
+            SizedBox(
+              height: 20,
             ),
             Text('audioEncoder'),
             DropdownButton<AndroidAudioEncoder>(
@@ -77,9 +99,12 @@ class _SetupAndroidConfigPageState extends State<SetupAndroidConfigPage> {
                       (AndroidAudioEncoder value) {
                 return DropdownMenuItem<AndroidAudioEncoder>(
                   value: value,
-                  child: Text(value.toString()),
+                  child: Text(value.toString().split('.')[1]),
                 );
               }).toList(),
+            ),
+            SizedBox(
+              height: 20,
             ),
             Text('audioSource'),
             DropdownButton<AndroidAudioSource>(
@@ -94,7 +119,7 @@ class _SetupAndroidConfigPageState extends State<SetupAndroidConfigPage> {
                       (AndroidAudioSource value) {
                 return DropdownMenuItem<AndroidAudioSource>(
                   value: value,
-                  child: Text(value.toString()),
+                  child: Text(value.toString().split('.')[1]),
                 );
               }).toList(),
             ),
@@ -111,7 +136,7 @@ class _SetupAndroidConfigPageState extends State<SetupAndroidConfigPage> {
                       (AndroidOutputFormat value) {
                 return DropdownMenuItem<AndroidOutputFormat>(
                   value: value,
-                  child: Text(value.toString()),
+                  child: Text(value.toString().split('.')[1]),
                 );
               }).toList(),
             ),
@@ -121,12 +146,15 @@ class _SetupAndroidConfigPageState extends State<SetupAndroidConfigPage> {
                 Navigator.pop(
                     context,
                     await FlexibleAudioRecorder.setAndroidConfig(
-                      audioChannels: int.tryParse(_audioChannelsController.text),
+                      audioChannels:
+                          int.tryParse(_audioChannelsController.text),
                       audioEncoder: _audioEncoder,
                       audioEncodingBitRate:
                           int.tryParse(_audioEncodingBitRateController.text),
                       audioSource: _audioSource,
                       outputFormat: _outputFormat,
+                      audioSamplingRate:
+                          int.tryParse(_audioSamplingRateController.text),
                     ));
               },
             ),

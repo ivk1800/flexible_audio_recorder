@@ -8,6 +8,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  audioplayer: ^0.5.2
   flutter:
     sdk: flutter
 
