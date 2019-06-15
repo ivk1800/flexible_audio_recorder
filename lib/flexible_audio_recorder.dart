@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 class FlexibleAudioRecorder {
   static const MethodChannel _channel =
@@ -36,4 +37,104 @@ class FlexibleAudioRecorder {
     final bool result = await _channel.invokeMethod('requestAudioPermission');
     return result;
   }
+
+  static Future<void> setAndroidConfig(
+      {@required int audioChannels,
+      @required AndroidAudioEncoder audioEncoder,
+      @required int audioEncodingBitRate,
+      @required AndroidAudioSource audioSource,
+      @required AndroidOutputFormat outputFormat}) async {
+    Map map = {
+      'audioChannels': audioChannels,
+      'audioEncoder': audioEncoder.index,
+      'audioEncodingBitRate': audioEncodingBitRate,
+      'audioSource': audioSource.index,
+      'outputFormat': outputFormat.index,
+    };
+
+    final bool result = await _channel.invokeMethod('setConfig', map);
+    return result;
+  }
+
+  static Future<AndroidConfiguration> getAndroidConfig() async {
+    final Map result = await _channel.invokeMethod('getConfig');
+    return AndroidConfiguration.fromMap(result);
+  }
+}
+
+class AndroidConfiguration {
+  final int audioChannels;
+  final AndroidAudioEncoder audioEncoder;
+  final int audioEncodingBitRate;
+  final AndroidAudioSource audioSource;
+  final AndroidOutputFormat outputFormat;
+
+  const AndroidConfiguration(
+      {@required this.audioChannels,
+      @required this.audioEncoder,
+      @required this.audioEncodingBitRate,
+      @required this.audioSource,
+      @required this.outputFormat});
+
+  factory AndroidConfiguration.fromMap(Map map) {
+    if (map == null) {
+      return null;
+    }
+
+    return AndroidConfiguration(
+      audioChannels: map['audioChannels'],
+      audioEncoder: AndroidAudioEncoder.values[map['audioEncoder']],
+      audioEncodingBitRate: map['audioEncodingBitRate'],
+      audioSource: AndroidAudioSource.values[map['audioSource']],
+      outputFormat: AndroidOutputFormat.values[map['outputFormat']],
+    );
+  }
+
+  @override
+  String toString() {
+    return {
+      'audioChannels': audioChannels,
+      'audioEncoder': audioEncoder,
+      'audioEncodingBitRate': audioEncodingBitRate,
+      'audioSource': audioSource,
+      'outputFormat': outputFormat,
+    }.toString();
+  }
+}
+
+enum AndroidAudioEncoder {
+  DEFAULT,
+  AMR_NB,
+  AMR_WB,
+  AAC,
+  HE_AAC,
+  AAC_ELD,
+  VORBIS
+}
+
+enum AndroidAudioSource {
+  DEFAULT,
+  MIC,
+  VOICE_UPLINK,
+  VOICE_DOWNLINK,
+  VOICE_CALL,
+  CAMCORDER,
+  VOICE_RECOGNITION,
+  VOICE_COMMUNICATION,
+  REMOTE_SUBMIX,
+  UNPROCESSED
+}
+
+enum AndroidOutputFormat {
+  DEFAULT,
+  THREE_GPP,
+  MPEG_4,
+  RAW_AMR,
+  AMR_NB,
+  AMR_WB,
+  AAC_ADIF,
+  AAC_ADTS,
+  OUTPUT_FORMAT_RTP_AV,
+  MPEG_2_TS,
+  WEBM
 }

@@ -47,6 +47,12 @@ public class FlexibleAudioRecorderPlugin implements MethodCallHandler {
       case "requestAudioPermission":
         delegate.handleRequestAudioPermission(call, result);
         break;
+      case "setConfig":
+        delegate.handleSetConfig(call, result);
+        break;
+      case "getConfig":
+        delegate.handleGetConfig(call, result);
+        break;
       default:
         result.notImplemented();
         break;

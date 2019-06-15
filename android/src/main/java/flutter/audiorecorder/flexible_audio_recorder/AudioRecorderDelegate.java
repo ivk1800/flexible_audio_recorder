@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
@@ -28,6 +29,8 @@ public class AudioRecorderDelegate implements PluginRegistry.RequestPermissionsR
 
     private MediaRecorder recorder = null;
     private String filePath;
+
+    private AudioRecorderConfig recorderConfig = AudioRecorderConfig.defaultConfig();
 
     AudioRecorderDelegate(Activity activity) {
         this.activity = activity;
@@ -54,6 +57,7 @@ public class AudioRecorderDelegate implements PluginRegistry.RequestPermissionsR
         return recorder != null;
     }
 
+    @SuppressWarnings("unchecked")
     void handleStartRecording(MethodCall call, MethodChannel.Result result) {
         if (!isAudioPermissionGranded()) {
             result.error("error", "startRecording", "Need request Audio permission!");
@@ -76,10 +80,38 @@ public class AudioRecorderDelegate implements PluginRegistry.RequestPermissionsR
         try {
             startRecording();
             result.success(filePath);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            result.error("error", "startRecording", e.getMessage());
+            result.error("error", "startRecording", e.toString());
+            recorder = null;
         }
+    }
+
+    void handleSetConfig(MethodCall call, MethodChannel.Result result) {
+        Map<String, Object> arguments = (Map<String, Object>) call.arguments;
+
+        final Integer audioChannels = (Integer) arguments.get("audioChannels");
+        final Integer audioEncoder = (Integer) arguments.get("audioEncoder");
+        final Integer audioEncodingBitRate = (Integer) arguments.get("audioEncodingBitRate");
+        final Integer audioSource = (Integer) arguments.get("audioSource");
+        final Integer outputFormat = (Integer) arguments.get("outputFormat");
+
+        this.recorderConfig = new AudioRecorderConfig(audioChannels, audioEncoder, audioEncodingBitRate, audioSource, outputFormat);
+
+        result.success(null);
+    }
+
+    void handleGetConfig(MethodCall call, MethodChannel.Result result) {
+        AudioRecorderConfig config = this.recorderConfig;
+
+        final Map<String, Integer> map = new HashMap<>();
+        map.put("audioChannels", config.getAudioChannels());
+        map.put("audioEncoder", config.getAudioEncoder());
+        map.put("audioEncodingBitRate", config.getAudioEncodingBitRate());
+        map.put("audioSource", config.getAudioSource());
+        map.put("outputFormat", config.getOutputFormat());
+
+        result.success(map);
     }
 
     private boolean isAudioPermissionGranded() {
@@ -105,13 +137,34 @@ public class AudioRecorderDelegate implements PluginRegistry.RequestPermissionsR
 
     private void startRecording() throws IOException {
         recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+
+        setupRecorder();
         recorder.setOutputFile(filePath);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         recorder.prepare();
         recorder.start();
+    }
+
+    private void setupRecorder() {
+        if (recorderConfig.getAudioChannels() != null) {
+            recorder.setAudioChannels(recorderConfig.getAudioChannels());
+        }
+
+        if (recorderConfig.getAudioEncodingBitRate() != null) {
+            recorder.setAudioEncodingBitRate(recorderConfig.getAudioEncodingBitRate());
+        }
+
+        if (recorderConfig.getAudioSource() != null) {
+            recorder.setAudioSource(recorderConfig.getAudioSource());
+        }
+
+        if (recorderConfig.getOutputFormat() != null) {
+            recorder.setOutputFormat(recorderConfig.getOutputFormat());
+        }
+
+        if (recorderConfig.getAudioEncoder() != null) {
+            recorder.setAudioEncoder(recorderConfig.getAudioEncoder());
+        }
     }
 
     private String generateFileName() {

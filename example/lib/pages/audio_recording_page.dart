@@ -1,4 +1,5 @@
 import 'package:flexible_audio_recorder/flexible_audio_recorder.dart';
+import 'package:flexible_audio_recorder_example/pages/setup_android_config_page.dart';
 import 'package:flutter/material.dart';
 
 class AudioRecordingPage extends StatefulWidget {
@@ -79,6 +80,33 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
                     await FlexibleAudioRecorder.stopRecording()
                         .catchError((dynamic error) {
                       showMessageAlert(context, 'stopRecording', error);
+                    }));
+              },
+            ),
+            RaisedButton(
+              child: Text('getAndroidConfig'),
+              onPressed: () async {
+                showMessageAlert(
+                    context,
+                    'getAndroidConfig',
+                    await FlexibleAudioRecorder.getAndroidConfig()
+                        .catchError((dynamic error) {
+                      showMessageAlert(context, 'getAndroidConfig', error);
+                    }));
+              },
+            ),
+            RaisedButton(
+              child: Text('setAndroidConfig'),
+              onPressed: () async {
+                showMessageAlert(
+                    context,
+                    'setAndroidConfig',
+                    await Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                          return SetupAndroidConfigPage();
+                        }))
+                        .catchError((dynamic error) {
+                      showMessageAlert(context, 'getAndroidConfig', error);
                     }));
               },
             ),
