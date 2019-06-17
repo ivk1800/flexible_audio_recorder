@@ -134,7 +134,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
     return FutureBuilder(
             future: FlexibleAudioRecorder.isRecording,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
-              bool isRecording = snapshot.data;
+              bool isRecording = snapshot.data ?? false;
 
               if (isRecording) {
                 return SizedBox(
